@@ -55,8 +55,8 @@ def data_exploration(df):
     df.info()
 
 
-
 class Visualizer:
+    """A class for performing various data visualization tasks on a pandas DataFrame."""
 
     def __init__(self, df):
         """
@@ -77,7 +77,6 @@ class Visualizer:
         - DataFrame: A DataFrame with numerical columns.
         - DataFrame: A DataFrame with object (string) columns.
         """
-
         return self.df.select_dtypes(include=np.number), self.df.select_dtypes(include="O")
     
 
@@ -98,7 +97,7 @@ class Visualizer:
         axes = axes.flat
 
         for i, col in enumerate(cols):
-            sns.histplot(x=col, data=self.dataframe, ax=axes[i], color=color, bins=20)
+            sns.histplot(x=col, data=self.df, ax=axes[i], color=color, bins=20)
 
         plt.suptitle("Distribution of numerical variables")
         plt.tight_layout()
@@ -155,7 +154,7 @@ class Visualizer:
         axes = axes.flat
 
         for i, col in enumerate(df_cat.columns):
-            sns.countplot(x=col, data=self.dataframe, order=self.df[col].value_counts().index, ax=axes[i], color=color)
+            sns.countplot(x=col, data=self.df, order=self.df[col].value_counts().index, ax=axes[i], color=color)
             axes[i].tick_params(rotation=90)
             axes[i].set_title(col)
             axes[i].set(xlabel=None)
@@ -221,10 +220,10 @@ class Visualizer:
         """
 
         # Verify if the variables exist in the DataFrame
-        if cat_var1 not in self.dataframe.columns:
+        if cat_var1 not in self.df.columns:
             raise ValueError(f"The variable '{cat_var1}' does not exist in the DataFrame.")
 
-        if cat_var2 not in self.dataframe.columns:
+        if cat_var2 not in self.df.columns:
             raise ValueError(f"The variable '{cat_var2}' does not exist in the DataFrame.")
 
         plt.figure(figsize=size)
@@ -305,23 +304,23 @@ class Visualizer:
         # Convert to datetime
         self.df[temporal_variable] = pd.to_datetime(self.df[temporal_variable])
 
+        df = self.df.copy()
+
         # Group the data according to the specified interval.
         if interval == "hour":
-            self.df["interval"] = self.df[temporal_variable].dt.hour
+            df["interval"] = self.df[temporal_variable].dt.hour
         elif interval == "day":
-            self.df["interval"] = self.df[temporal_variable].dt.day
+            df["interval"] = self.df[temporal_variable].dt.day
         elif interval == "month":
-            self.df["interval"] = self.df[temporal_variable].dt.month_name()
+            df["interval"] = self.df[temporal_variable].dt.month_name()
         elif interval == "year":
-            self.df["interval"] = self.df[temporal_variable].dt.year
+            df["interval"] = self.df[temporal_variable].dt.year
         else:
             raise ValueError("Unrecognized interval. Use 'hour', 'day', 'month', or 'year'.")
 
         # If an order is provided, apply categorization.
         if order:
-
-            df = self.df.copy()
-            df["interval"] = pd.Categorical(self.dataframe["interval"], categories=order, ordered=True)
+            df["interval"] = pd.Categorical(self.df["interval"], categories=order, ordered=True)
 
         # Creata graphics
         plt.figure(figsize=(15, 5))
@@ -363,7 +362,7 @@ class Visualizer:
         for i, col in enumerate(cols):
 
             sns.boxplot(x=col,
-                        data=self.dF, 
+                        data=self.df, 
                         ax=axes[i], 
                         color=color, 
                         flierprops={'markersize': 4, 'markerfacecolor': 'orange'})
@@ -421,7 +420,7 @@ class Visualizer:
             raise ValueError("One or both specified columns do not exist in the DataFrame.")
 
         plt.figure(figsize=(10, 6))
-        sns.boxplot(x=categorical_column, y=numeric_column, data=self.dataframe, palette="mako")
+        sns.boxplot(x=categorical_column, y=numeric_column, data=self.df, palette="mako")
 
         plt.title(title, fontsize=16)
         plt.xlabel(xlabel if xlabel else categorical_column, fontsize=14)
@@ -432,6 +431,7 @@ class Visualizer:
 
 
 class Desbalanceo:
+
     def __init__(self, dataframe, variable_dependiente):
         self.dataframe = dataframe
         self.variable_dependiente = variable_dependiente
@@ -444,6 +444,7 @@ class Desbalanceo:
                             edgecolor=edgecolor)
         fig.set(xticklabels=["No", "Yes"])
         plt.show()
+
 
     def balancear_clases_pandas(self, metodo):
 
